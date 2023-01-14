@@ -43,10 +43,10 @@ namespace RaftEditor
             Modos.Columns.Add("description", typeof(string));
 
             int ID = 0;
-            foreach (string s in new string[] { "Normal", "Difícil", "Criativo", "Fácil" })
+            foreach (string s in new string[] { "Normal", "Difícil", "Criativo", "Fácil", "Pacífico" })
             {
                 DataRow Row = Modos.NewRow();
-                Row["value"] = ID;
+                Row["value"] = ID <= 3 ? ID : ID + 1;
                 Row["description"] = s;
                 Modos.Rows.Add(Row);
                 ID++;
@@ -153,10 +153,15 @@ namespace RaftEditor
                             Lb_Msg.Text = "Arquivo lido";
                             Lb_Msg.ForeColor = Color.Green;
                             break;
+                        case 5:
+                            Lb_Modo.Text = "Pacífico";
+                            Lb_Msg.Text = "Arquivo lido";
+                            Lb_Msg.ForeColor = Color.Green;
+                            break;
                         default:
                             Lb_Modo.Text = "??????";
-                            Lb_Msg.Text = "Arquivo lido (Indeterminado)";
-                            Lb_Msg.ForeColor = Color.Yellow;
+                            Lb_Msg.Text = "(Indeterminado)";
+                            Lb_Msg.ForeColor = Color.DarkOrange;
                             break;
                     }
 
