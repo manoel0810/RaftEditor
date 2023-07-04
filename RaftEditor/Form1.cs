@@ -101,7 +101,11 @@ namespace RaftEditor
                 Lb_Msg.Text = "Modificado (salvo)";
                 Lb_Msg.ForeColor = Color.Green;
 
-                ReadFile(FilePath);
+                if (DialogResult.Yes == MessageBox.Show("Attention! Modifying the game save can corrupt the file. Make sure the save version is compatible for the correct address and that the game is not running. Do you want to continue?", "Attention", MessageBoxButtons.YesNo, MessageBoxIcon.Warning))
+                    ReadFile(FilePath);
+                else
+                    return;
+
                 MessageBox.Show("A dificuldade do jogo foi alterada com êxito", "Raft Editor", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
