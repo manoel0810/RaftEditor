@@ -10,6 +10,8 @@ namespace RaftEditor
     public partial class Form1 : Form
     {
         string FilePath = string.Empty;
+        private const int OffsetPosition = 0x4CC; //1228 DEC
+
         public Form1()
         {
             InitializeComponent();
@@ -17,15 +19,17 @@ namespace RaftEditor
 
         private void AbrirToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            string userPath = $"C:\\Users\\{Environment.UserName}\\AppData\\LocalLow\\Redbeet Interactive\\Raft\\User\\";
             OpenFileDialog OPD = new OpenFileDialog()
             {
-                Filter = "Arquivo *.rgd|*.rgd",
-                Multiselect = false
+                Filter = "Arquivos RGD|*.rgd",
+                Multiselect = false,
+                InitialDirectory = Directory.Exists(userPath) ? userPath : ""
             };
 
             OPD.FileOk += OPD_FileOk;
             OPD.ShowDialog();
-            OPD.Dispose();
+            OPD?.Dispose();
         }
 
         private void OPD_FileOk(object sender, CancelEventArgs e)
@@ -80,14 +84,14 @@ namespace RaftEditor
 
                 using (FileStream fs = new FileStream(FilePath, FileMode.Open))
                 {
-                    if (fs.Length < 0x4cc)  ///0x4cc é o endereço respectivo à variável que define a dificuldade do jogo dentro do binário .rgd
+                    if (fs.Length < OffsetPosition)  ///0x4cc é o endereço respectivo à variável que define a dificuldade do jogo dentro do binário .rgd
                     {
-                        MessageBox.Show($"ERRO: Não foi possível ler o offset 0x4cc em {Path.GetFileName(FilePath)}", "Raft - Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show($"ERRO: Não foi possível ler o offset {OffsetPosition} em {Path.GetFileName(FilePath)}", "Raft - Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         fs.Close();
                         return;
                     }
 
-                    fs.Position = 0x4cc;
+                    fs.Position = OffsetPosition;
                     using (BinaryWriter Write = new BinaryWriter(fs))
                     {
                         Write.Write(OBJ.Row.Field<Int32>("value"));
@@ -122,14 +126,14 @@ namespace RaftEditor
         {
             using (FileStream fs = new FileStream(PATH, FileMode.Open))
             {
-                if (fs.Length < 0x4cc)
+                if (fs.Length < OffsetPosition)
                 {
-                    MessageBox.Show($"ERRO: Não foi possível ler o offset 0x4cc em {Path.GetFileName(FilePath)}", "Raft - Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"ERRO: Não foi possível ler o offset {OffsetPosition} em {Path.GetFileName(FilePath)}", "Raft - Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     fs.Close();
                     return;
                 }
 
-                fs.Position = 0x4cc;
+                fs.Position = OffsetPosition;
                 using (BinaryReader Reader = new BinaryReader(fs))
                 {
                     int MODE = Reader.ReadInt32();
@@ -139,27 +143,27 @@ namespace RaftEditor
                     {
                         case 0:
                             Lb_Modo.Text = "Normal";
-                            Lb_Msg.Text = "Arquivo lido";
+                            Lb_Msg.Text = "Sucesso";
                             Lb_Msg.ForeColor = Color.Green;
                             break;
                         case 1:
                             Lb_Modo.Text = "Dificil";
-                            Lb_Msg.Text = "Arquivo lido";
+                            Lb_Msg.Text = "Sucesso";
                             Lb_Msg.ForeColor = Color.Green;
                             break;
                         case 2:
                             Lb_Modo.Text = "Criativo";
-                            Lb_Msg.Text = "Arquivo lido";
+                            Lb_Msg.Text = "Sucesso";
                             Lb_Msg.ForeColor = Color.Green;
                             break;
                         case 3:
                             Lb_Modo.Text = "Fácil";
-                            Lb_Msg.Text = "Arquivo lido";
+                            Lb_Msg.Text = "Sucesso";
                             Lb_Msg.ForeColor = Color.Green;
                             break;
                         case 5:
                             Lb_Modo.Text = "Pacífico";
-                            Lb_Msg.Text = "Arquivo lido";
+                            Lb_Msg.Text = "Sucesso";
                             Lb_Msg.ForeColor = Color.Green;
                             break;
                         default:
